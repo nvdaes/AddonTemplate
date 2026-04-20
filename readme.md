@@ -89,10 +89,15 @@ sconstruct
 and file:
 ```
 .pre-commit-config.yaml
+changelog.md
+pyproject.toml
+uv.lock
 ```
 4. Create an `addon` folder inside your new folder. You will put your code in the usual folders for NVDA extensions, under the `addon` folder. For instance: `globalPlugins`, `synthDrivers`, etc.
-5. In the `buildVars.py` file, change variable `addon_info` with your add-on's information (name, summary, description, version, author, url, source url, license, and license URL). Also, be sure to carefully set the paths contained in the other variables in that file. If you need to use custom Markdown extensions, original add-on interface language is not English, or include custom braille translations tables, be sure to fil out markdown list, base language variable, and braille tables dictioanry, respectively.
+5. In the `buildVars.py` file, change variable `addon_info` with your add-on's information (name, summary, description, version, author, url, source url, license, and license URL). Also, be sure to carefully set the paths contained in the other variables in that file. If you need to use custom Markdown extensions, original add-on interface language is not English, or include custom braille translations tables, be sure to fil out markdown list, base language variable, and braille tables dictionary, respectively.
 6. Gettext translations must be placed into `addon\locale\<lang>/LC_MESSAGES\nvda.po`.
+7. If you create releases with the GitHub workflow, pushing a tag, update the `changelog.md` file with the release description you want to be displayed in on your GitHub release page.
+8. In the `[project]` section of `pyproject.toml`, update your project information.
 
 #### Add-on manifest specification
 
@@ -102,7 +107,7 @@ An add-on manifest generated manually or via `buildVars.py` must include the fol
 * Summary (string): name as shown on NVDA's Add-on store.
 * Description (string): a short detailed description about the add-on.
 * Version (string), ideally number.number with an optional third number, denoting major.minor.patch.
-* Changelog (string): changes between previous and current add-on releases.
+* Changelog (string): changes between previous and current add-on releases, visible in the Add-on Store.
 * Author (string and an email address): one or more add-on author contact information in the form "name <email@address>".
 * URL (string): a web address where the add-on information can be found such as add-on repository.
 * docFileName (string): name of the documentation file.
@@ -141,6 +146,19 @@ Information on custom symbol dictionaries must be specified in buildVars under `
 	* mandatory (True/False): Always enabled (True) or optional and visible in the GUI (False)
 
 Note: you must fill out this dictionary if at least one custom symbol dictionary is included in the add-on. If not, leave the dictionary empty.
+
+###### Speech pronunciation dictionaries
+
+Information on custom speech (pronunciation) dictionaries must be specified in buildVars under `speechDictionaries` dictionary as follows:
+
+* Dictionary name (string key for a nested dictionary): each `symbolDictionaries` entry is a name for the included custom speech dictionary placed in `speechDicts` folder inside `addon` folder.
+The file is named `<dictionary_name>.dic`.
+This nested dictionary should specify:
+	* displayName (string): the name of the dictionary shown to users and is translatable.
+	* mandatory (True/False): Always enabled (True) or optional and visible in the GUI (False)
+
+Note: you must fill out this dictionary if at least one custom speech dictionary is included in the add-on.
+If not, leave the dictionary empty.
 
 ### To manage documentation files for your addon:
 
