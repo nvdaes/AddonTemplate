@@ -36,11 +36,21 @@ In addition, this template includes configuration files for the following tools 
 * Ruff (pyproject.toml/tool.ruff sections): a Python linter written in Rust. Sections starting with tool.ruff house configuration options for Ruff.
 * Configuration for VS Code. It requires NVDA's repo at the same level as the add-on folder containing your actual source files, with prepared source code (`scons source`). preparing the source code is a step in the instructions for building NVDA itself, see [The NVDA Repository](https://github.com/nvaccess/nvda) for details.
 	* Place the .vscode in this repo within the addon folder, where your add-on source files (will) reside. The settings file within this folder assumes the NVDA repository is within the parent folder of this folder. If your addon folder is within the addonTemplate folder, then your NVDA repository folder needs to also be within the addonTemplate folder, or the source will not be found.
-	* Open the addon folder in VS Code. This should initialize VS Code with the correct settings and provide you with code completion and other VS Code features. 
+	* Open the addon folder in VS Code.
+	This should initialize VS Code with the correct settings and provide you with code completion and other VS Code features.
 	* Press `control+shift+m` after saving a file to search for problems.
 	* Use arrow and tab keys for the autocompletion feature.
 	* Press `control+shift+p` to open the commands palette and search for recommended extensions to install or check if they are installed.
 * Pyright (pyproject.toml/tool.pyright sections): a Python static type checker. Sections starting with tool.pyright house configuration options for Pyright.
+
+## Automatic checks on GitHub
+
+### Pre-commit
+
+It's recommended to install pre-commit.ci [pre-commit](https://pre-commit.ci) on personal GitHub accounts.
+Then, you can choose if pre-commit will be used in all or just in selected repos.
+
+Setting up pre-commit.ci for each add-on using the add-on template will help you maintain a consistent code style in your add-ons.
 
 ## Requirements
 
@@ -79,10 +89,15 @@ sconstruct
 and file:
 ```
 .pre-commit-config.yaml
+changelog.md
+pyproject.toml
+uv.lock
 ```
 4. Create an `addon` folder inside your new folder. You will put your code in the usual folders for NVDA extensions, under the `addon` folder. For instance: `globalPlugins`, `synthDrivers`, etc.
-5. In the `buildVars.py` file, change variable `addon_info` with your add-on's information (name, summary, description, version, author, url, source url, license, and license URL). Also, be sure to carefully set the paths contained in the other variables in that file. If you need to use custom Markdown extensions, original add-on interface language is not English, or include custom braille translations tables, be sure to fil out markdown list, base language variable, and braille tables dictioanry, respectively.
+5. In the `buildVars.py` file, change variable `addon_info` with your add-on's information (name, summary, description, version, author, url, source url, license, and license URL). Also, be sure to carefully set the paths contained in the other variables in that file. If you need to use custom Markdown extensions, original add-on interface language is not English, or include custom braille translations tables, be sure to fil out markdown list, base language variable, and braille tables dictionary, respectively.
 6. Gettext translations must be placed into `addon\locale\<lang>/LC_MESSAGES\nvda.po`.
+7. If you create releases with the GitHub workflow, pushing a tag, update the `changelog.md` file with the release description you want to be displayed in on your GitHub release page.
+8. In the `[project]` section of `pyproject.toml`, update your project information.
 
 #### Add-on manifest specification
 
@@ -92,7 +107,7 @@ An add-on manifest generated manually or via `buildVars.py` must include the fol
 * Summary (string): name as shown on NVDA's Add-on store.
 * Description (string): a short detailed description about the add-on.
 * Version (string), ideally number.number with an optional third number, denoting major.minor.patch.
-* Changelog (string): changes between previous and current add-on releases.
+* Changelog (string): changes between previous and current add-on releases, visible in the Add-on Store.
 * Author (string and an email address): one or more add-on author contact information in the form "name <email@address>".
 * URL (string): a web address where the add-on information can be found such as add-on repository.
 * docFileName (string): name of the documentation file.
@@ -108,7 +123,7 @@ In addition, the following information must be filled out (not used in the manif
 
 ##### Custom add-on information
 
-In addition to the core manifest data, custom add-on information can be specified. 
+In addition to the core manifest data, custom add-on information can be specified.
 
 ###### Braille translation tables
 
@@ -132,6 +147,19 @@ Information on custom symbol dictionaries must be specified in buildVars under `
 
 Note: you must fill out this dictionary if at least one custom symbol dictionary is included in the add-on. If not, leave the dictionary empty.
 
+###### Speech pronunciation dictionaries
+
+Information on custom speech (pronunciation) dictionaries must be specified in buildVars under `speechDictionaries` dictionary as follows:
+
+* Dictionary name (string key for a nested dictionary): each `symbolDictionaries` entry is a name for the included custom speech dictionary placed in `speechDicts` folder inside `addon` folder.
+The file is named `<dictionary_name>.dic`.
+This nested dictionary should specify:
+	* displayName (string): the name of the dictionary shown to users and is translatable.
+	* mandatory (True/False): Always enabled (True) or optional and visible in the GUI (False)
+
+Note: you must fill out this dictionary if at least one custom speech dictionary is included in the add-on.
+If not, leave the dictionary empty.
+
 ### To manage documentation files for your addon:
 
 1. Copy the `readme.md` file for your add-on to the first created folder, where you copied `buildVars.py`. You can also copy `style.css` to improve the presentation of HTML documents.
@@ -145,6 +173,17 @@ Note: you must fill out this dictionary if at least one custom symbol dictionary
 	* version: add-on version string of the form major.minor or major.minor.patch (all integers)
 	* channel: update channel (do not use this switch unless you know what you are doing).
 	* dev: suitable for development builds, names the add-on according to current date (yyyymmdd) and sets update channel to "dev".
+
+
+### Translation workflow
+
+You can add the documentation and interface messages of your add-on to be translated in Crowdin.
+
+You need a Crowdin account and an API token with permissions to push to a Crowdin project.
+For example, you may want to use this [Crowdin project to translate NVDA add-ons](https://crowdin.com/project/nvdaaddons).
+
+Then, to export your add-on to Crowdin for the first time, run the `.github/workflows/exportAddonsToCrowdin.yml`, ensuring that the update option is set to false.
+When you have updated messages or documentation, run the workflow setting update to true (which is the default option).
 
 ### Additional tools
 
