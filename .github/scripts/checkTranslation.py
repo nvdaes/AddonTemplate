@@ -4,12 +4,15 @@ import xml.etree.ElementTree as ET
 import polib
 import langid
 
+
 def normalize(s: str | None) -> str:
 	return " ".join((s or "").strip().lower().split())
+
 
 # -----------------------------
 # PO CHECK
 # -----------------------------
+
 
 def checkPo(path: str) -> float:
 	po = polib.pofile(path)
@@ -27,9 +30,11 @@ def checkPo(path: str) -> float:
 
 	return translated / total if total else 0.0
 
+
 # -----------------------------
 # XLIFF CHECK
 # -----------------------------
+
 
 def checkXliff(path: str) -> float:
 	tree = ET.parse(path)
@@ -52,9 +57,11 @@ def checkXliff(path: str) -> float:
 
 	return translated / total if total else 0.0
 
+
 # -----------------------------
 # MD LANGUAGE SCORE (langid)
 # -----------------------------
+
 
 def scoreMd(path: str, expected_lang: str) -> float:
 	try:
@@ -76,9 +83,11 @@ def scoreMd(path: str, expected_lang: str) -> float:
 	else:
 		return 0.0
 
+
 # -----------------------------
 # COMPARE MULTIPLE MD FILES
 # -----------------------------
+
 
 def compareMd(files: list[str], lang: str):
 	results = []
@@ -107,9 +116,11 @@ def compareMd(files: list[str], lang: str):
 
 	sys.exit(0)
 
+
 # -----------------------------
 # MAIN
 # -----------------------------
+
 
 def main():
 	if len(sys.argv) < 2:
@@ -170,6 +181,7 @@ def main():
 	else:
 		print(f"Unsupported file type: {ext}")
 		sys.exit(2)
+
 
 if __name__ == "__main__":
 	main()
