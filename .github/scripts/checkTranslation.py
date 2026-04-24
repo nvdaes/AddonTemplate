@@ -61,19 +61,9 @@ def main():
 	if len(sys.argv) < 2:
 		print("Usage:")
 		print("  checkTranslation.py <file>")
-		print("  checkTranslation.py <file> <lang>")
-		print("  checkTranslation.py <file1> <file2> [...] <lang>")
 		sys.exit(2)
 
 	args = sys.argv[1:]
-
-	# -------------------------
-	# MULTI FILE MODE
-	# -------------------------
-	if len(args) >= 3:
-		*files, lang = args
-		compareMd(files, lang)
-		return
 
 	path = args[0]
 
@@ -98,20 +88,6 @@ def main():
 		ratio = checkXliff(path)
 		print(f"translation_ratio={ratio}")
 		sys.exit(0 if ratio > 0.05 else 1)
-
-	# -------------------------
-	# MD (LANG SCORE)
-	# -------------------------
-	elif ext == ".md":
-		if len(args) < 2:
-			print("Missing language argument for MD scoring")
-			sys.exit(2)
-
-		lang = args[1]
-		score = scoreMd(path, lang)
-
-		print(f"md_score={score}")
-		sys.exit(0)
 
 	else:
 		print(f"Unsupported file type: {ext}")
