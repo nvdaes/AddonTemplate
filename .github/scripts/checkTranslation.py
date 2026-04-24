@@ -2,7 +2,6 @@ import sys
 import os
 import xml.etree.ElementTree as ET
 import polib
-import langid
 
 
 def normalize(s: str | None) -> str:
@@ -56,70 +55,6 @@ def checkXliff(path: str) -> float:
 					translated += 1
 
 	return translated / total if total else 0.0
-
-
-# -----------------------------
-# MD LANGUAGE SCORE (langid)
-# -----------------------------
-
-
-def scoreMd(path: str, expected_lang: str) -> float:
-	try:
-		with open(path, "r", encoding="utf-8") as f:
-			text = f.read()
-	except Exception:
-		return 0.0
-
-	if not text.strip():
-		return 0.0
-
-	lang, score = langid.classify(text)
-
-	# Normalize score into positive confidence
-	confidence = 1 / (1 + abs(score))
-
-	if lang == expected_lang:
-		return confidence
-	else:
-		return 0.0
-
-
-# -----------------------------
-# COMPARE MULTIPLE MD FILES
-# -----------------------------
-
-
-def compareMd(files: list[str], lang: str):
-	results = []
-
-	for f in files:
-		if not os.path.exists(f):
-			continue
-
-		score = scoreMd(f, lang)
-		results.append((f, score))
-
-	if not results:
-		print("winner=None")
-		sys.exit(1)
-
-	results.sort(key=lambda x: x[1], reverse=True)
-
-	winner = results[0]
-
-	print("comparison_results:")
-	for f, s in results:
-		print(f"{f}={s}")
-
-	print(f"winner={winner[0]}")
-	print(f"winner_score={winner[1]}")
-
-	sys.exit(0)
-
-
-# -----------------------------
-# MAIN
-# -----------------------------
 
 
 def main():
