@@ -3,7 +3,7 @@
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
-from typing import Generator
+from collections.abc import Generator
 from collections.abc import Iterable
 import tempfile
 import os
