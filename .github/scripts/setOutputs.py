@@ -11,4 +11,11 @@ import buildVars
 
 def main():
 	addonId = buildVars.addon_info["addon_name"]
-	print(addonId)
+	name = "addonId"
+	value = addonId
+	with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+		f.write(f"{name}={value}\n")
+
+
+if __name__ == "__main__":
+	main()
