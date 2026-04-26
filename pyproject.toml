@@ -25,6 +25,7 @@ dependencies = [
 	"scons==4.10.1",
 	"Markdown==3.10",
 	# Translations management
+	"crowdin-api-client==1.24.1",
 	"nh3==0.3.2",
 	"lxml==6.1.0",
 	"mdx_truly_sane_lists==1.3",
