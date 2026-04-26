@@ -31,7 +31,7 @@ def get_score_from_api(lang_id: str, crowdin_file_name: str) -> float:
 		search_ext = ".pot" if ext_target == "po" else f".{ext_target}"
 		
 		# 2. FETCH ALL FILES TO FIND MATCHING ID
-		files = client.source_files.list_files(projectId=project_id, limit=500)
+		files = client.source_files.with_fetch_all().list_files(project_id)
 		file_id = None
 		
 		for f in files['data']:
