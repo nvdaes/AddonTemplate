@@ -188,17 +188,15 @@ If you wish to use the community project [Crowdin project to translate NVDA add-
 #### 2. GitHub Secrets
 To allow the workflows to communicate with Crowdin, you must add the following secrets to your GitHub repository (`Settings > Secrets and variables > Actions`):
 * `crowdinAuthToken`: Paste your Crowdin API token here.
-* `CROWDIN_PROJECT_ID`: The ID of your project on Crowdin.
 
 #### 3. Infrastructure
 Ensure that your repository includes the following files (provided in this template):
-* **Workflows:** `.github/workflows/exportAddonsToCrowdin.yml` and `.github/workflows/downloadTranslations.yml`.
-* **Scripts:** The `.github/scripts/` folder containing `checkTranslation.py`, `langCodes.py`, `languageMappings.json`, and `crowdinSync.ps1`.
+* **Workflows:** `.github/workflows/crowdinL10n.yml**
+* **Scripts:** The `.github/scripts/` folder containing `checkTranslation.py`, `langCodes.py`, `languageMappings.json`, `setOutputs.py`, and `crowdinSync.ps1`.
 
 #### 4. Running the Workflow
-* **Initial Export:** To export your add-on to Crowdin for the first time, run the `exportAddonsToCrowdin.yml` workflow, ensuring that the "update" option is set to **false**.
-* **Updates:** When you have updated messages or documentation, run the same workflow with "update" set to **true** (default).
-* **Download:** The `downloadTranslations.yml` workflow will periodically (or manually) fetch new translations, verify their quality using the scripts, and create a Pull Request with the updated `.po` and `readme.md` files.
+
+The translation workflow will be run weekly. Also, you can run the workflow manually from GitHub or using GitHub CLI.
 
 ### Additional tools
 
