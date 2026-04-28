@@ -182,11 +182,11 @@ This template allows you to automate the synchronization of documentation and in
 #### 1. Crowdin Project Setup
 You need a Crowdin account and an API token with permissions to manage a project. 
 If you wish to use the community project [Crowdin project to translate NVDA add-ons](https://crowdin.com/project/nvdaaddons):
-* **Request Access:** Send a message to the [NVDA add-on development/discussion list](https://nvda-addons.groups.io/g/nvda-addons) requesting an invitation to join the project as a developer.
+* **Request Access:** Send a message to the [NVDA translation mailing list](https://groups.io/g/nvda-translations) (**nvda-translations@groups.io**) requesting an invitation to join the project as a developer.
 * **API Token:** Once invited, generate an API token in your Crowdin account settings.
 
 #### 2. GitHub Secrets
-To allow the workflows to communicate with Crowdin, you must add the following secret to your GitHub repository (`Settings > Secrets and variables > Actions`):
+To allow the workflows to communicate with Crowdin, you must add the following secrets to your GitHub repository (`Settings > Secrets and variables > Actions`):
 * `crowdinAuthToken`: Paste your Crowdin API token here.
 * `CROWDIN_PROJECT_ID`: The ID of your project on Crowdin.
 
