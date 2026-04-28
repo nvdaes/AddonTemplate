@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 $ErrorActionPreference = 'Stop'
 
-# Config git
+# Git configuration for automated commits
 git config user.name "github-actions[bot]"
 git config user.email "github-actions[bot]@users.noreply.github.com"
 
@@ -11,133 +11,156 @@ if (-not $addonId) {
     exit 1
 }
 
-# Update xliff file
+# --- STEP 1: PREPARATION AND SOURCE UPDATE ---
+
 $xliffFile = "./$addonId.xliff"
 $mdFile = "./readme.md"
+
 if (Test-Path $mdFile) {
     if (Test-Path $xliffFile) {
         $tempXliff = [System.IO.Path]::GetTempFileName()
         Copy-Item "$addonId.xliff" $tempXliff -Force
-        Write-Host "Copied $addonId.xliff to temporary file: $tempXliff"
+        Write-Host "DEBUG: Updating XLIFF source based on readme.md..."
         uv run .github/scripts/markdownTranslate.py updateXliff -m $mdFile -x $tempXliff -o $xliffFile
-        Write-Host "Updated $xliffFile based on $mdFile"
     } else {
-        Write-Host "XLIFF file not found, but readme.md exists. Creating an XLIFF template for translations."
+        Write-Host "DEBUG: XLIFF template not found. Creating new one from readme.md..."
         uv run .github/scripts/markdownTranslate.py generateXliff -m $mdFile -o $xliffFile
     }
-} else {
-    Write-Host "readme.md not found. Skipping XLIFF generation."
 }
 
-# Update pot file in Crowdin
+# Update POT file (addon interface)
 uv run scons pot
 $potFile = "$addonId.pot"
+
+# --- STEP 2: UPLOAD SOURCES TO CROWDIN ---
+
 if (Test-Path $potFile) {
-    Write-Host "Uploading updated POT to Crowdin..."
+    Write-Host "DEBUG: Uploading updated POT source to Crowdin..."
     ./l10nUtil.exe uploadSourceFile "$potFile" -c addon
-} else {
-    Write-Host "POT file not found, skipping POT update."
 }
 
-# Update xliff file in Crowdin
 if (Test-Path $xliffFile) {
-    Write-Host "Uploading XLIFF to Crowdin..."
+    Write-Host "DEBUG: Uploading updated XLIFF source to Crowdin..."
     ./l10nUtil.exe uploadSourceFile "$xliffFile" -c addon
     git add "$xliffFile"
     git diff --staged --quiet
     if ($LASTEXITCODE -ne 0) {
         git commit -m "Update $xliffFile for $addonId"
         git push
-      } else {
-        Write-Host "No changes to $xliffFile, skipping commit."
     }
-} else {
-    Write-Host "XLIFF file not found, skipping XLIFF upload."
 }
 
-# Export translations
-Write-Host "Exporting translations from Crowdin..."
+# --- STEP 3: EXPORT AND PROCESS TRANSLATIONS ---
+
+Write-Host "DEBUG: Exporting translations from Crowdin..."
 ./l10nUtil.exe exportTranslations -o _addonL10n -c addon
 
 # Ensure base directories exist
 New-Item -ItemType Directory -Force -Path addon/locale | Out-Null
 New-Item -ItemType Directory -Force -Path addon/doc | Out-Null
 
+# Load language mappings for Crowdin API calls
 $languageMappings = Get-Content -Raw ".github/scripts/languageMappings.json" | ConvertFrom-Json
-foreach ($dir in Get-ChildItem -Path "_addonL10n/$addonId" -Directory) {
 
-    $langCode = $dir.Name
+foreach ($dir in Get-ChildItem -Path "_addonL10n/$addonId" -Directory) {
+    $langCode = $dir.Name 
+    
     if ($langCode -eq "en") { continue }
+
+    # Identify codes
     $crowdinLang = $languageMappings[$langCode]
     if (-not $crowdinLang) { $crowdinLang = $langCode }
-    $langShort = $langCode.Split('_')[0]
-    Write-Host "--- Processing: $addonId ($langCode) ---"
+    $langShort = $langCode.Split('-')[0].Split('_')[0]
 
-    # Temporary files from Crowdin
+    # Map to local NVDA directory
+    $localLangDir = uv run python .github/scripts/langCodes.py $langCode
+    
+    Write-Host "`n--- Processing Language: $langCode (Mapped to local: $localLangDir) ---"
+
+    # Paths
     $remoteMd = Join-Path $dir.FullName "$addonId.md"
     $remoteXliff = Join-Path $dir.FullName "$addonId.xliff"
     $remotePo = Join-Path $dir.FullName "$addonId.po"
-
-    # Local paths
-    $localMdDir = "addon/doc/$langCode"
+    $localMdDir = "addon/doc/$localLangDir"
     $localMd = "$localMdDir/readme.md"
-    $localPoPath = "addon/locale/$langCode/LC_MESSAGES/nvda.po"
+    $localPoPath = "addon/locale/$localLangDir/LC_MESSAGES/nvda.po"
 
-    # 1. PO PROCESSING
+    # --- 3.1 PO FILE PROCESSING ---
+    $poImported = $false
     if (Test-Path $remotePo) {
+        Write-Host "DEBUG: Checking Remote PO progress for $langShort..."
         uv run python .github/scripts/checkTranslation.py "$addonId.po" $langShort
         if ($LASTEXITCODE -eq 0) {
+            Write-Host "SUCCESS: Remote PO is valid. Importing to $localPoPath"
             New-Item -ItemType Directory -Force -Path (Split-Path $localPoPath) | Out-Null
             Move-Item $remotePo $localPoPath -Force
+            $poImported = $true
+        } else {
+            Write-Host "WARNING: Remote PO progress is below threshold."
         }
     }
 
-    # 2. EVALUATION VIA API
+    if (-not $poImported -and (Test-Path $localPoPath)) {
+        Write-Host "ACTION: Uploading local legacy PO to Crowdin ($crowdinLang) as fallback."
+        ./l10nUtil.exe uploadTranslationFile $crowdinLang "$addonId.po" $localPoPath -c addon
+    }
+
+    # --- 3.2 DOCUMENTATION PROCESSING (MD & XLIFF) ---
     $scoreMd = 0.0
     $scoreXliff = 0.0
 
     if (Test-Path $remoteMd) {
+        Write-Host "DEBUG: Evaluating Remote Markdown score..."
         $res = uv run python .github/scripts/checkTranslation.py "$addonId.md" $langShort
         $scoreMd = [double]($res | Select-String "mdScore=").ToString().Split("=")[1]
+    } else {
+        Write-Host "DEBUG: No remote Markdown file found for this language."
     }
 
     if (Test-Path $remoteXliff) {
+        Write-Host "DEBUG: Evaluating Remote XLIFF score..."
         $res = uv run python .github/scripts/checkTranslation.py "$addonId.xliff" $langShort
         $scoreXliff = [double]($res | Select-String "translationRatio=").ToString().Split("=")[1]
+    } else {
+        Write-Host "DEBUG: No remote XLIFF file found for this language."
     }
 
-    Write-Host "Scores -> MD: $scoreMd | XLIFF: $scoreXliff"
+    Write-Host "DEBUG: Comparison Scores -> MD: $scoreMd | XLIFF: $scoreXliff"
 
-    # 3. DECISION LOGIC
     $threshold = 0.5
-    $imported = $false
+    $docImported = $false
 
     if ($scoreXliff -gt $threshold -or $scoreMd -gt $threshold) {
-        # Create doc directory if needed
         if (!(Test-Path $localMdDir)) { New-Item -ItemType Directory -Force -Path $localMdDir | Out-Null }
 
         if ($scoreXliff -ge $scoreMd) {
-            Write-Host "Action: Converting XLIFF to local MD"
+            Write-Host "SUCCESS: XLIFF is better or equal. Converting XLIFF to local MD ($localLangDir)..."
             ./l10nUtil.exe xliff2md $remoteXliff $localMd
-            $imported = $true
+            $docImported = $true
         } else {
-            Write-Host "Action: Importing Remote MD to local"
+            Write-Host "SUCCESS: Markdown is better. Importing Remote MD to local ($localLangDir)..."
             Move-Item $remoteMd $localMd -Force
-            $imported = $true
+            $docImported = $true
         }
+    } else {
+        Write-Host "WARNING: Both remote MD and XLIFF scores are below threshold ($threshold)."
     }
 
-    # 4. FALLBACK: Upload local if remote is poor
-    if (-not $imported -and (Test-Path $localMd)) {
-        Write-Host "Action: Remote quality too low. Uploading local MD to Crowdin..."
+    if (-not $docImported -and (Test-Path $localMd)) {
+        Write-Host "ACTION: Documentation quality too low. Uploading local MD to Crowdin ($crowdinLang) as fallback."
         ./l10nUtil.exe uploadTranslationFile $crowdinLang "$addonId.md" $localMd -c addon
     }
 }
 
+# --- STEP 4: COMMIT UPDATED TRANSLATIONS ---
+
 git add addon/locale addon/doc
 git diff --staged --quiet
 if ($LASTEXITCODE -ne 0) {
-    git commit -m "Update translations for $addonId from Crowdin"
+    git commit -m "Update translations for $addonId from Crowdin (Automatic Sync)"
     $branch = $env:downloadTranslationsBranch
     git push -f origin "HEAD:$branch"
+    Write-Host "SUCCESS: Translations committed and pushed."
+} else {
+    Write-Host "DEBUG: No changes in translations to commit."
 }
