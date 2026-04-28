@@ -177,13 +177,28 @@ If not, leave the dictionary empty.
 
 ### Translation workflow
 
-You can add the documentation and interface messages of your add-on to be translated in Crowdin.
+This template allows you to automate the synchronization of documentation and interface messages with Crowdin.
 
-You need a Crowdin account and an API token with permissions to push to a Crowdin project.
-For example, you may want to use this [Crowdin project to translate NVDA add-ons](https://crowdin.com/project/nvdaaddons).
+#### 1. Crowdin Project Setup
+You need a Crowdin account and an API token with permissions to manage a project. 
+If you wish to use the community project [Crowdin project to translate NVDA add-ons](https://crowdin.com/project/nvdaaddons):
+* **Request Access:** Send a message to the [NVDA add-on development/discussion list](https://nvda-addons.groups.io/g/nvda-addons) requesting an invitation to join the project as a developer.
+* **API Token:** Once invited, generate an API token in your Crowdin account settings.
 
-Then, to export your add-on to Crowdin for the first time, run the `.github/workflows/exportAddonsToCrowdin.yml`, ensuring that the update option is set to false.
-When you have updated messages or documentation, run the workflow setting update to true (which is the default option).
+#### 2. GitHub Secrets
+To allow the workflows to communicate with Crowdin, you must add the following secret to your GitHub repository (`Settings > Secrets and variables > Actions`):
+* `crowdinAuthToken`: Paste your Crowdin API token here.
+* `CROWDIN_PROJECT_ID`: The ID of your project on Crowdin.
+
+#### 3. Infrastructure
+Ensure that your repository includes the following files (provided in this template):
+* **Workflows:** `.github/workflows/exportAddonsToCrowdin.yml` and `.github/workflows/downloadTranslations.yml`.
+* **Scripts:** The `.github/scripts/` folder containing `checkTranslation.py`, `langCodes.py`, `languageMappings.json`, and `crowdinSync.ps1`.
+
+#### 4. Running the Workflow
+* **Initial Export:** To export your add-on to Crowdin for the first time, run the `exportAddonsToCrowdin.yml` workflow, ensuring that the "update" option is set to **false**.
+* **Updates:** When you have updated messages or documentation, run the same workflow with "update" set to **true** (default).
+* **Download:** The `downloadTranslations.yml` workflow will periodically (or manually) fetch new translations, verify their quality using the scripts, and create a Pull Request with the updated `.po` and `readme.md` files.
 
 ### Additional tools
 
