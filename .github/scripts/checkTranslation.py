@@ -1,12 +1,24 @@
+# checkTranslation.py
 import sys
 import os
 from crowdin_api import CrowdinClient
 
 
-def find_file_id(client, project_id, base_target, search_ext):
+def findFileId(client: CrowdinClient, project_id: int, base_target: str, search_ext: str) -> int | None:
 	"""
 	Iterates through all project files (using pagination) to find the ID
 	of the source file matching the target name and extension.
+	
+	@param client: The Crowdin API client instance.
+	@type client: CrowdinClient
+	@param project_id: The ID of the Crowdin project.
+	@type project_id: int
+	@param base_target: The base name of the file (e.g., 'myaddon').
+	@type base_target: str
+	@param search_ext: The extension to look for (e.g., '.pot').
+	@type search_ext: str
+	@return: The file ID if found, otherwise None.
+	@rtype: int | None
 	"""
 	offset = 0
 	limit = 100
@@ -35,10 +47,17 @@ def find_file_id(client, project_id, base_target, search_ext):
 	return None
 
 
-def get_score_from_api(file_name_to_search: str, lang_id: str) -> float:
+def getScoreFromAPI(file_name_to_search: str, lang_id: str) -> float:
 	"""
 	Retrieves the translation progress score for a specific language and file.
 	Handles pagination for both file listing and language status.
+	
+	@param file_name_to_search: The local path or name of the file to check.
+	@type file_name_to_search: str
+	@param lang_id: The language code (e.g., 'fr' or 'pt_BR').
+	@type lang_id: str
+	@return: The translation ratio between 0.0 and 1.0.
+	@rtype: float
 	"""
 	token = os.environ.get("crowdinAuthToken")
 	p_id_env = os.environ.get("CROWDIN_PROJECT_ID")
@@ -61,7 +80,7 @@ def get_score_from_api(file_name_to_search: str, lang_id: str) -> float:
 
 		print(f"DEBUG: Searching for source file: {base_target}{search_ext}")
 
-		file_id = find_file_id(client, p_id, base_target, search_ext)
+		file_id = findFileId(client, p_id, base_target, search_ext)
 
 		if file_id is None:
 			print(f"WARNING: File '{base_target}{search_ext}' not found on Crowdin.")
@@ -111,7 +130,7 @@ def main():
 	input_file = sys.argv[1]
 	lang = sys.argv[2]
 
-	score = get_score_from_api(input_file, lang)
+	score = getScoreFromAPI(input_file, lang)
 
 	# Output formatted for capture by the PowerShell script
 	print(f"translationRatio={score}")
