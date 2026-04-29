@@ -37,11 +37,14 @@ $potFile = "$addonId.pot"
 if (Test-Path $potFile) {
     Write-Host "DEBUG: Uploading updated POT source to Crowdin..."
     ./l10nUtil.exe uploadSourceFile "$potFile" -c addon
+    Start-Sleep -Seconds 5  # Pause to avoid exceeding API limits
+    
 }
 
 if (Test-Path $xliffFile) {
     Write-Host "DEBUG: Uploading updated XLIFF source to Crowdin..."
     ./l10nUtil.exe uploadSourceFile "$xliffFile" -c addon
+    Start-Sleep -Seconds 5  # Pause to avoid exceeding API limits
     git add "$xliffFile"
     git diff --staged --quiet
     if ($LASTEXITCODE -ne 0) {
@@ -67,10 +70,19 @@ foreach ($dir in Get-ChildItem -Path "_addonL10n/$addonId" -Directory) {
     
     if ($langCode -eq "en") { continue }
 
-    # Identify codes
-    $crowdinLang = $languageMappings[$langCode]
+    $mappingKeys = $languageMappings.PSObject.Properties.Name
+    $crowdinLang = $null
+    foreach ($key in $mappingKeys) {
+        if ($key -eq $langCode) {
+            $crowdinLang = $languageMappings.$key
+            break
+        }
+    }
+    Write-Host "DEBUG: langCode=$langCode, mapping=$crowdinLang"
     if (-not $crowdinLang) { $crowdinLang = $langCode }
     $langShort = $langCode.Split('-')[0].Split('_')[0]
+
+    Write-Host "CROWDIN_LANG=$crowdinLang"
 
     # Map to local NVDA directory
     $localLangDir = uv run python .github/scripts/langCodes.py $langCode
