@@ -37,14 +37,11 @@ $potFile = "$addonId.pot"
 if (Test-Path $potFile) {
     Write-Host "DEBUG: Uploading updated POT source to Crowdin..."
     ./l10nUtil.exe uploadSourceFile "$potFile" -c addon
-    Start-Sleep -Seconds 5  # Pause to avoid exceeding API limits
-
 }
 
 if (Test-Path $xliffFile) {
     Write-Host "DEBUG: Uploading updated XLIFF source to Crowdin..."
     ./l10nUtil.exe uploadSourceFile "$xliffFile" -c addon
-    Start-Sleep -Seconds 5  # Pause to avoid exceeding API limits
     git add "$xliffFile"
     git diff --staged --quiet
     if ($LASTEXITCODE -ne 0) {
@@ -66,28 +63,27 @@ New-Item -ItemType Directory -Force -Path addon/doc | Out-Null
 $languageMappings = Get-Content -Raw ".github/scripts/languageMappings.json" | ConvertFrom-Json
 
 foreach ($dir in Get-ChildItem -Path "_addonL10n/$addonId" -Directory) {
-    $langCode = $dir.Name
-
+    $langCode = $dir.Name 
+    
     if ($langCode -eq "en") { continue }
 
-    $mappingKeys = $languageMappings.PSObject.Properties.Name
+    # --- Identify codes
     $crowdinLang = $null
-    foreach ($key in $mappingKeys) {
-        if ($key -eq $langCode) {
-            $crowdinLang = $languageMappings.$key
-            break
-        }
+    
+    # Use the ."variable" syntax to correctly read the PSCustomObject from JSON
+    if ($languageMappings.PSObject.Properties.Name -contains $langCode) {
+        $crowdinLang = $languageMappings."$langCode"
     }
-    Write-Host "DEBUG: langCode=$langCode, mapping=$crowdinLang"
-    if (-not $crowdinLang) { $crowdinLang = $langCode }
-    $langShort = $langCode.Split('-')[0].Split('_')[0]
 
-    Write-Host "CROWDIN_LANG=$crowdinLang"
+    # Fallback: If no mapping is found, replace underscores with dashes for Crowdin compatibility
+    if (-not $crowdinLang) { 
+        $crowdinLang = $langCode.Replace('_', '-') 
+    }
 
     # Map to local NVDA directory
     $localLangDir = uv run python .github/scripts/langCodes.py $langCode
-
-    Write-Host "`n--- Processing Language: $langCode (Mapped to local: $localLangDir) ---"
+    
+    Write-Host "--- Processing Language: $langCode (Crowdin: $crowdinLang) ---" -ForegroundColor Cyan
 
     # Paths
     $remoteMd = Join-Path $dir.FullName "$addonId.md"
@@ -100,8 +96,8 @@ foreach ($dir in Get-ChildItem -Path "_addonL10n/$addonId" -Directory) {
     # --- 3.1 PO FILE PROCESSING ---
     $poImported = $false
     if (Test-Path $remotePo) {
-        Write-Host "DEBUG: Checking Remote PO progress for $langShort..."
-        uv run python .github/scripts/checkTranslation.py "$addonId.po" $langShort
+        Write-Host "DEBUG: Checking Remote PO progress for $crowdinLang..."
+        uv run python .github/scripts/checkTranslation.py "$addonId.po" $crowdinLang
         if ($LASTEXITCODE -eq 0) {
             Write-Host "SUCCESS: Remote PO is valid. Importing to $localPoPath"
             New-Item -ItemType Directory -Force -Path (Split-Path $localPoPath) | Out-Null
@@ -123,7 +119,7 @@ foreach ($dir in Get-ChildItem -Path "_addonL10n/$addonId" -Directory) {
 
     if (Test-Path $remoteMd) {
         Write-Host "DEBUG: Evaluating Remote Markdown score..."
-        $res = uv run python .github/scripts/checkTranslation.py "$addonId.md" $langShort
+        $res = uv run python .github/scripts/checkTranslation.py "$addonId.md" $crowdinLang
         $scoreMd = [double]($res | Select-String "mdScore=").ToString().Split("=")[1]
     } else {
         Write-Host "DEBUG: No remote Markdown file found for this language."
@@ -131,7 +127,7 @@ foreach ($dir in Get-ChildItem -Path "_addonL10n/$addonId" -Directory) {
 
     if (Test-Path $remoteXliff) {
         Write-Host "DEBUG: Evaluating Remote XLIFF score..."
-        $res = uv run python .github/scripts/checkTranslation.py "$addonId.xliff" $langShort
+        $res = uv run python .github/scripts/checkTranslation.py "$addonId.xliff" $crowdinLang
         $scoreXliff = [double]($res | Select-String "translationRatio=").ToString().Split("=")[1]
     } else {
         Write-Host "DEBUG: No remote XLIFF file found for this language."
