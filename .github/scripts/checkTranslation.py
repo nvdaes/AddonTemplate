@@ -122,7 +122,7 @@ def main():
 		print(f"poScore={score}")
 
 	# Exit with success (0) if there is at least some translated content
-	sys.exit(0 if score > 0.05 else 1)
+	sys.exit(0 if score > 0.5 else 1)
 
 
 if __name__ == "__main__":
