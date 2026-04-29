@@ -38,7 +38,7 @@ if (Test-Path $potFile) {
     Write-Host "DEBUG: Uploading updated POT source to Crowdin..."
     ./l10nUtil.exe uploadSourceFile "$potFile" -c addon
     Start-Sleep -Seconds 5  # Pause to avoid exceeding API limits
-    
+
 }
 
 if (Test-Path $xliffFile) {
@@ -66,8 +66,8 @@ New-Item -ItemType Directory -Force -Path addon/doc | Out-Null
 $languageMappings = Get-Content -Raw ".github/scripts/languageMappings.json" | ConvertFrom-Json
 
 foreach ($dir in Get-ChildItem -Path "_addonL10n/$addonId" -Directory) {
-    $langCode = $dir.Name 
-    
+    $langCode = $dir.Name
+
     if ($langCode -eq "en") { continue }
 
     $mappingKeys = $languageMappings.PSObject.Properties.Name
@@ -86,7 +86,7 @@ foreach ($dir in Get-ChildItem -Path "_addonL10n/$addonId" -Directory) {
 
     # Map to local NVDA directory
     $localLangDir = uv run python .github/scripts/langCodes.py $langCode
-    
+
     Write-Host "`n--- Processing Language: $langCode (Mapped to local: $localLangDir) ---"
 
     # Paths

@@ -2,6 +2,7 @@ import sys
 import os
 from crowdin_api import CrowdinClient
 
+
 def find_file_id(client, project_id, base_target, search_ext):
 	"""
 	Iterates through all project files (using pagination) to find the ID
@@ -14,15 +15,15 @@ def find_file_id(client, project_id, base_target, search_ext):
 		resp = client.source_files.list_files(
 			projectId=project_id,
 			limit=limit,
-			offset=offset
+			offset=offset,
 		)
 
-		data = resp['data']
+		data = resp["data"]
 		for f in data:
-			path_crowdin = f['data']['path'].lower()
+			path_crowdin = f["data"]["path"].lower()
 			# Check if the path ends with addon_id.pot or addon_id.xliff
 			if path_crowdin.endswith(f"{base_target}{search_ext}"):
-				file_id = f['data']['id']
+				file_id = f["data"]["id"]
 				print(f"DEBUG: Match found: {path_crowdin} (ID: {file_id})")
 				return file_id
 
@@ -32,6 +33,7 @@ def find_file_id(client, project_id, base_target, search_ext):
 		offset += limit
 
 	return None
+
 
 def get_score_from_api(file_name_to_search: str, lang_id: str) -> float:
 	"""
@@ -51,8 +53,8 @@ def get_score_from_api(file_name_to_search: str, lang_id: str) -> float:
 	try:
 		# Clean and prepare search patterns
 		# Example: 'addon/locale/fr/LC_MESSAGES/myaddon.po' -> base_target: 'myaddon'
-		base_target = file_name_to_search.replace('\\', '/').split('/')[-1].rsplit('.', 1)[0].lower()
-		ext_target = file_name_to_search.split('.')[-1].lower()
+		base_target = file_name_to_search.replace("\\", "/").split("/")[-1].rsplit(".", 1)[0].lower()
+		ext_target = file_name_to_search.split(".")[-1].lower()
 
 		# On Crowdin, the source for a .po file is usually a .pot file
 		search_ext = ".pot" if ext_target == "po" else f".{ext_target}"
@@ -74,21 +76,21 @@ def get_score_from_api(file_name_to_search: str, lang_id: str) -> float:
 				projectId=p_id,
 				fileId=file_id,
 				limit=limit,
-				offset=offset
+				offset=offset,
 			)
 
-			data = resp['data']
+			data = resp["data"]
 			for item in data:
-				lang_api = item['data']['languageId']
-				
+				lang_api = item["data"]["languageId"]
+
 				# Flexible matching (e.g., 'fr' will match 'fr' or 'fr-FR' from API)
 				# Also handles underscore to dash conversion for Crowdin compatibility
-				if lang_api.lower().startswith(lang_id.lower().replace('_', '-')):
-					progress = float(item['data']['translationProgress'])
+				if lang_api.lower().startswith(lang_id.lower().replace("_", "-")):
+					progress = float(item["data"]["translationProgress"])
 					return progress / 100
 
 			# Check pagination total
-			total = resp['pagination']['totalCount']
+			total = resp["pagination"]["totalCount"]
 			if offset + limit >= total:
 				break
 			offset += limit
@@ -99,6 +101,7 @@ def get_score_from_api(file_name_to_search: str, lang_id: str) -> float:
 	except Exception as e:
 		print(f"API ERROR: {e}")
 		return 0.0
+
 
 def main():
 	if len(sys.argv) < 3:
@@ -113,13 +116,14 @@ def main():
 	# Output formatted for capture by the PowerShell script (crowdinSync.ps1)
 	print(f"translationRatio={score}")
 
-	if input_file.lower().endswith('.md'):
+	if input_file.lower().endswith(".md"):
 		print(f"mdScore={score}")
 	else:
 		print(f"poScore={score}")
 
 	# Exit with success (0) if there is at least some translated content
 	sys.exit(0 if score > 0.05 else 1)
+
 
 if __name__ == "__main__":
 	main()
