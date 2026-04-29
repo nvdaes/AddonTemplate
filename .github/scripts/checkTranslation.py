@@ -113,17 +113,21 @@ def main():
 
 	score = get_score_from_api(input_file, lang)
 
-	# Output formatted for capture by the PowerShell script (crowdinSync.ps1)
+	# Output formatted for capture by the PowerShell script
 	print(f"translationRatio={score}")
 
-	if input_file.lower().endswith(".md"):
+	# Identify extension to provide a specific score label
+	ext = input_file.lower().split('.')[-1]
+	if ext == 'md':
 		print(f"mdScore={score}")
+	elif ext == 'xliff':
+		print(f"xliffScore={score}")
 	else:
+		# Default to poScore for .po and other localization files
 		print(f"poScore={score}")
 
-	# Exit with success (0) if there is at least some translated content
+	# Exit with success (0) if there is at least 50% translated content
 	sys.exit(0 if score > 0.5 else 1)
-
 
 if __name__ == "__main__":
 	main()

@@ -128,7 +128,7 @@ foreach ($dir in Get-ChildItem -Path "_addonL10n/$addonId" -Directory) {
     if (Test-Path $remoteXliff) {
         Write-Host "DEBUG: Evaluating Remote XLIFF score..."
         $res = uv run python .github/scripts/checkTranslation.py "$addonId.xliff" $crowdinLang
-        $scoreXliff = [double]($res | Select-String "translationRatio=").ToString().Split("=")[1]
+        $scoreXliff = [double]($res | Select-String "xliffScore=").ToString().Split("=")[1]
     } else {
         Write-Host "DEBUG: No remote XLIFF file found for this language."
     }
