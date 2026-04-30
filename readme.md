@@ -198,6 +198,8 @@ Ensure that your repository includes the following files (provided in this templ
 
 The translation workflow will be run weekly. Also, you can run the workflow manually from GitHub or using GitHub CLI.
 
+If you have various add-ons, please edit the cron line of workflows in each repo, so that your API token is not used at the same time.
+
 ### Additional tools
 
 The template includes configuration files for use with additional tools such as linters. These include:
