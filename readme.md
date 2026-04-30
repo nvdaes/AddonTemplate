@@ -191,8 +191,8 @@ To allow the workflows to communicate with Crowdin, you must add the following s
 
 #### 3. Infrastructure
 Ensure that your repository includes the following files (provided in this template):
-* **Workflows:** `.github/workflows/crowdinL10n.yml**
-* **Scripts:** The `.github/scripts/` folder containing `checkTranslation.py`, `langCodes.py`, `languageMappings.json`, `setOutputs.py`, and `crowdinSync.ps1`.
+* **Workflows:** `.github/workflows/crowdinL10n.yml`
+* **Scripts:** The `.github/scripts/` folder containing `checkTranslation.py`, `markdownTranslate.py`, `languageMappings.json`, `setOutputs.py`, and `crowdinSync.ps1`.
 
 #### 4. Running the Workflow
 
