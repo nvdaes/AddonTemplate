@@ -5,11 +5,12 @@ $ErrorActionPreference = 'Stop'
 git config user.name "github-actions[bot]"
 git config user.email "github-actions[bot]@users.noreply.github.com"
 
-$addonId = $env:ADDON_ID.Trim()
-if (-not $addonId) {
+$rawAddonId = $env:ADDON_ID
+if ([string]::IsNullOrWhiteSpace($rawAddonId)) {
     Write-Error "Failed to get addon ID."
     exit 1
 }
+$addonId = $rawAddonId.Trim()
 
 # --- STEP 1: PREPARATION AND SOURCE UPDATE ---
 
