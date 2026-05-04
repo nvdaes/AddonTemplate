@@ -180,8 +180,10 @@ If not, leave the dictionary empty.
 This template allows you to automate the synchronization of documentation and interface messages with Crowdin.
 
 #### 1. Crowdin Project Setup
+
 You need a Crowdin account and an API token with permissions to manage a project.
 If you wish to use the community project [Crowdin project to translate NVDA add-ons](https://crowdin.com/project/nvdaaddons):
+
 * **Request Access:** Send a message to the [NVDA translation mailing list](https://groups.io/g/nvda-translations) (**nvda-translations@groups.io**), or in the [NVDA Add-ons Mailing List](https://groups.io/g/nvda-addons) (**nvda-addons@groups.io**), requesting an invitation to join the project as a developer.
 * **API Token:** Once invited, generate an API token in your Crowdin account settings.
 
