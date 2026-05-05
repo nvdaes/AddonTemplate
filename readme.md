@@ -191,6 +191,12 @@ If you wish to use the community project [Crowdin project to translate NVDA add-
 To allow the workflows to communicate with Crowdin, you must add the following secrets to your GitHub repository (`Settings > Secrets and variables > Actions`):
 * `CROWDIN_TOKEN`: Paste your Crowdin API token here.
 
+Optionally, if you don't want to use the [Crowdin community project](https://crowdin.com/project/nvdaaddons), please add the following variables:
+
+* `CROWDIN_PROJECT_ID`: Paste the project ID of your Crowdin project.
+* L10N_UTIL_CONFIG: The path to the yaml file containing the configuration for the nvdaL10nUtil.exe file, used by the translation scripts.
+For more details, visit the [nvdaL10n repositori](https://github.com/nvaccess/nvdaL10n).
+
 #### 3. Infrastructure
 Ensure that your repository includes the following files (provided in this template):
 * **Workflows:** `.github/workflows/crowdinL10n.yml`
