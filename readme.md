@@ -194,7 +194,7 @@ To allow the workflows to communicate with Crowdin, you must add the following s
 Optionally, if you don't want to use the [Crowdin community project](https://crowdin.com/project/nvdaaddons), please add the following variables:
 
 * `CROWDIN_PROJECT_ID`: Paste the project ID of your Crowdin project.
-* L10N_UTIL_CONFIG: The path to the yaml file containing the configuration for the nvdaL10nUtil.exe file, used by the translation scripts.
+* L10N_UTIL_CONFIG: The path to the yaml file containing the configuration for the l10nUtil.exe file, used by the translation scripts.
 For more details, visit the [nvdaL10n repositori](https://github.com/nvaccess/nvdaL10n).
 
 #### 3. Infrastructure
