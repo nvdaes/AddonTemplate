@@ -23,6 +23,13 @@ jobs:
       contents: write
 
     steps:
+      - name: Random startup delay (0-5 minutes)
+        if: github.event_name == 'schedule'
+        shell: pwsh
+        run: |
+          $delaySeconds = Get-Random -Minimum 0 -Maximum 301
+          Write-Host "Sleeping for $delaySeconds seconds..."
+          Start-Sleep -Seconds $delaySeconds
       - name: Checkout add-on
         uses: actions/checkout@v6
         with:
