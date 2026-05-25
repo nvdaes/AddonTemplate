@@ -23,7 +23,7 @@ if (Test-Path $mdFile) {
         try {
             Copy-Item "$addonId.xliff" $tempXliff -Force
             Write-Host "DEBUG: Updating XLIFF source based on readme.md..."
-            uv run .github/scripts/markdownTranslate.py updateXliff -m $mdFile -x $tempXliff -o $xliffFile
+            ./l10nUtil.exe md2xliff $mdFile $xliffFile -o $tempXliff
         } finally {
             if (Test-Path $tempXliff) {
                 Remove-Item $tempXliff -Force
@@ -31,7 +31,7 @@ if (Test-Path $mdFile) {
         }
     } else {
         Write-Host "DEBUG: XLIFF template not found. Creating new one from readme.md..."
-        uv run .github/scripts/markdownTranslate.py generateXliff -m $mdFile -o $xliffFile
+        ./l10nUtil.exe md2xliff $mdFile $xliffFile
     }
 }
 
