@@ -140,7 +140,7 @@ foreach ($dir in Get-ChildItem -Path "_addonL10n/$addonId" -Directory) {
 
     Write-Host "DEBUG: Comparison Scores -> MD: $scoreMd | XLIFF: $scoreXliff"
 
-    $threshold = 0.5
+    $threshold = $env:MIN_PERCENTAGE_TRANSLATED
     $docImported = $false
 
     if ($scoreXliff -gt $threshold -or $scoreMd -gt $threshold) {
