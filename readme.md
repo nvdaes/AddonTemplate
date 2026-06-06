@@ -179,6 +179,16 @@ If not, leave the dictionary empty.
 
 This template allows you to automate the synchronization of documentation and interface messages with Crowdin.
 
+#### Documentation Translation Format
+
+Documentation translations are managed through XLIFF files in Crowdin.
+
+The synchronization workflow generates an XLIFF source file from the English `readme.md` documentation using `l10nUtil.exe md2xliff`.
+
+Translators work on the XLIFF file in Crowdin. During synchronization, translated XLIFF files are downloaded and converted back to Markdown using `l10nUtil.exe xliff2md`.
+
+XLIFF is considered the single source of truth for documentation translations. Legacy Markdown translation files may still exist on Crowdin, but they are ignored by the synchronization workflow.
+
 #### 1. Crowdin Project Setup
 
 You need a Crowdin account and an API token with permissions to manage a project.
@@ -187,26 +197,58 @@ If you wish to use the community project [Crowdin project to translate NVDA add-
 * **Request Access:** Send a message to the [NVDA translation mailing list](https://groups.io/g/nvda-translations) (**nvda-translations@groups.io**), or in the [NVDA Add-ons Mailing List](https://groups.io/g/nvda-addons) (**nvda-addons@groups.io**), requesting an invitation to join the project as a developer.
 * **API Token:** Once invited, generate an API token in your Crowdin account settings.
 
-#### 2. GitHub Secrets
-To allow the workflows to communicate with Crowdin, you must add the following secrets to your GitHub repository (`Settings > Secrets and variables > Actions`):
+#### 2. GitHub Secrets and Variables
+
+To allow the workflows to communicate with Crowdin, you must add the following secret to your GitHub repository (`Settings > Secrets and variables > Actions`):
+
 * `CROWDIN_TOKEN`: Paste your Crowdin API token here.
 
 Optionally, if you don't want to use the [Crowdin community project](https://crowdin.com/project/nvdaaddons), please add the following variables:
 
 * `CROWDIN_PROJECT_ID`: Paste the project ID of your Crowdin project.
-* L10N_UTIL_CONFIG: The path to the yaml file containing the configuration for the l10nUtil.exe file, used by the translation scripts.
-For more details, visit the [nvdaL10n repositori](https://github.com/nvaccess/nvdaL10n).
+* `L10N_UTIL_CONFIG`: The path to the YAML file containing the configuration for `l10nUtil.exe`, used by the translation scripts.
+
+For more details, visit the [nvdaL10n repository](https://github.com/nvaccess/nvdaL10n).
+
+The workflow also supports a variable named `MIN_PERCENTAGE_TRANSLATED`, which defines the minimum translation completion percentage required before a translated file is synchronized back to the repository.
+
+To create this variable:
+
+1. Open your GitHub repository.
+2. Go to **Settings** > **Secrets and variables** > **Actions**.
+3. Select the **Variables** tab.
+4. Click **New repository variable**.
+5. Create a variable named `MIN_PERCENTAGE_TRANSLATED`.
+6. Set its value to a number between `0` and `100`.
+
+Examples:
+
+* `50`: Import files that are at least 50% translated.
+* `75`: Import files that are at least 75% translated.
+* `100`: Import only fully translated files.
+
+If this variable is not defined, the workflow uses a default value of `50`.
 
 #### 3. Infrastructure
+
 Ensure that your repository includes the following files (provided in this template):
+
 * **Workflows:** `.github/workflows/crowdinL10n.yml`
-* **Scripts:** The `.github/scripts/` folder containing `checkTranslation.py`, `markdownTranslate.py`, `languageMappings.json`, `setOutputs.py`, and `crowdinSync.ps1`.
+* **Scripts:** The `.github/scripts/` folder containing `checkTranslation.py`, `languageMappings.json`, `setOutputs.py`, and `crowdinSync.ps1`.
+
+Documentation synchronization relies on the XLIFF support built into `l10nUtil.exe`.
+
+The `md2xliff` command is used to generate the source XLIFF file from the English `readme.md` documentation file. Translated XLIFF files downloaded from Crowdin are then converted back to Markdown documentation using `l10nUtil.exe xliff2md`.
 
 #### 4. Running the Workflow
 
 The translation workflow will be run weekly. Also, you can run the workflow manually from GitHub or using GitHub CLI.
 
 If you have various add-ons, please edit the cron line of workflows in each repo, so that your API token is not used at the same time.
+
+Documentation and interface translations are synchronized only when their translation percentage reaches the configured `MIN_PERCENTAGE_TRANSLATED` threshold.
+
+This validation mechanism is applied consistently to both `.po` and `.xliff` translation files.
 
 ### Additional tools
 
