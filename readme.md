@@ -203,31 +203,21 @@ To allow the workflows to communicate with Crowdin, you must add the following s
 
 * `CROWDIN_TOKEN`: Paste your Crowdin API token here.
 
-Optionally, if you don't want to use the [Crowdin community project](https://crowdin.com/project/nvdaaddons), please add the following variables:
+Optionally, if you don't want to use the [Crowdin community project](https://crowdin.com/project/nvdaaddons), you can create repository variables from **Settings > Secrets and variables > Actions > Variables** by selecting the **Variables** tab and clicking **New repository variable**.
+
+The following repository variables are supported:
 
 * `CROWDIN_PROJECT_ID`: Paste the project ID of your Crowdin project.
-* `L10N_UTIL_CONFIG`: The path to the YAML file containing the configuration for `l10nUtil.exe`, used by the translation scripts.
+* `L10N_UTIL_CONFIG`: The path to the YAML file containing the configuration for `l10nUtil.exe`, used by the translation scripts. For more details, visit the [nvdaL10n repository](https://github.com/nvaccess/nvdaL10n).
+* `MIN_PERCENTAGE_TRANSLATED`: Defines the minimum translation completion percentage required before a translated file is synchronized back to the repository. The value must be between `0` and `100`.
 
-For more details, visit the [nvdaL10n repository](https://github.com/nvaccess/nvdaL10n).
-
-The workflow also supports a variable named `MIN_PERCENTAGE_TRANSLATED`, which defines the minimum translation completion percentage required before a translated file is synchronized back to the repository.
-
-To create this variable:
-
-1. Open your GitHub repository.
-2. Go to **Settings** > **Secrets and variables** > **Actions**.
-3. Select the **Variables** tab.
-4. Click **New repository variable**.
-5. Create a variable named `MIN_PERCENTAGE_TRANSLATED`.
-6. Set its value to a number between `0` and `100`.
-
-Examples:
+Examples for `MIN_PERCENTAGE_TRANSLATED`:
 
 * `50`: Import files that are at least 50% translated.
 * `75`: Import files that are at least 75% translated.
 * `100`: Import only fully translated files.
 
-If this variable is not defined, the workflow uses a default value of `50`.
+If `MIN_PERCENTAGE_TRANSLATED` is not defined, the workflow uses a default value of `50`.
 
 #### 3. Infrastructure
 
@@ -244,7 +234,7 @@ The `md2xliff` command is used to generate the source XLIFF file from the Englis
 
 The translation workflow will be run weekly. Also, you can run the workflow manually from GitHub or using GitHub CLI.
 
-If you have various add-ons, please edit the cron line of workflows in each repo, so that your API token is not used at the same time.
+If you manage several add-ons, consider using different cron schedules for each repository. Although the workflow includes a random startup delay to reduce collisions, concurrent Crowdin synchronization jobs may still occur.
 
 Documentation and interface translations are synchronized only when their translation percentage reaches the configured `MIN_PERCENTAGE_TRANSLATED` threshold.
 
