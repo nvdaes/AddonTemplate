@@ -213,8 +213,10 @@ Optionally, if you don't want to use the [Crowdin community project](https://cro
 The following repository variables are supported:
 
 * `CROWDIN_PROJECT_ID`: Paste the project ID of your Crowdin project.
-* `L10N_UTIL_CONFIG`: The path to the YAML file containing the configuration for `l10nUtil.exe`, used by the translation scripts. For more details, visit the [nvdaL10n repository](https://github.com/nvaccess/nvdaL10n).
-* `MIN_PERCENTAGE_TRANSLATED`: Defines the minimum translation completion percentage required before a translated file is synchronized back to the repository. The value must be between `0` and `100`.
+* `L10N_UTIL_CONFIG`: The path to the YAML file containing the configuration for `l10nUtil.exe`, used by the translation scripts.
+For more details, visit the [nvdaL10n repository](https://github.com/nvaccess/nvdaL10n).
+* `MIN_PERCENTAGE_TRANSLATED`: Defines the minimum translation completion percentage required before a translated file is synchronized back to the repository.
+The value must be between `0` and `100`.
 
 Examples for `MIN_PERCENTAGE_TRANSLATED`:
 
