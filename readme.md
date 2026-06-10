@@ -188,9 +188,11 @@ Documentation translations are managed through XLIFF files in Crowdin.
 
 The synchronization workflow generates an XLIFF source file from the English `readme.md` documentation using `l10nUtil.exe md2xliff`.
 
-Translators work on the XLIFF file in Crowdin. During synchronization, translated XLIFF files are downloaded and converted back to Markdown using `l10nUtil.exe xliff2md`.
+Translators work on the XLIFF file in Crowdin.
+During synchronization, translated XLIFF files are downloaded and converted back to Markdown using `l10nUtil.exe xliff2md`.
 
-XLIFF is considered the single source of truth for documentation translations. Legacy Markdown translation files may still exist on Crowdin, but they are ignored by the synchronization workflow.
+XLIFF is considered the single source of truth for documentation translations.
+Legacy Markdown translation files may still exist on Crowdin, but they are ignored by the synchronization workflow.
 
 #### 1. Crowdin Project Setup
 
@@ -231,11 +233,13 @@ Ensure that your repository includes the following files (provided in this templ
 
 Documentation synchronization relies on the XLIFF support built into `l10nUtil.exe`.
 
-The `md2xliff` command is used to generate the source XLIFF file from the English `readme.md` documentation file. Translated XLIFF files downloaded from Crowdin are then converted back to Markdown documentation using `l10nUtil.exe xliff2md`.
+The `md2xliff` command is used to generate the source XLIFF file from the English `readme.md` documentation file.
+Translated XLIFF files downloaded from Crowdin are then converted back to Markdown documentation using `l10nUtil.exe xliff2md`.
 
 #### 4. Running the Workflow
 
-The translation workflow will be run weekly. Also, you can run the workflow manually from GitHub or using GitHub CLI.
+The translation workflow will be run weekly.
+Also, you can run the workflow manually from GitHub or using GitHub CLI.
 
 If you manage several add-ons, consider using different cron schedules for each repository. Although the workflow includes a random startup delay to reduce collisions, concurrent Crowdin synchronization jobs may still occur.
 
