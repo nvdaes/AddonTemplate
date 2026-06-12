@@ -69,6 +69,10 @@ Poedit supports both:
 
 After completing translations locally, files can be uploaded back to Crowdin using `l10nUtil.exe`.
 
+Poedit is available at
+
+https://poedit.com/
+
 ## Translating Interface Strings
 
 Interface translations are stored in Portable Object (`.po`) files.
@@ -99,7 +103,9 @@ When translating documentation:
 
 After translating files locally, they can be uploaded to Crowdin using `l10nUtil.exe`.
 
-This utility is distributed through the `nvdaL10n` project.
+This utility can be found at
+
+https://github.com/nvaccess/nvdal10n
 
 Examples:
 
@@ -154,9 +160,9 @@ Translations are not immediately imported into GitHub repositories.
 The add-on maintainer runs a synchronization workflow that:
 
 1. Connects to the NVDA Add-ons Crowdin project.
-2. Downloads completed translations.
-3. Verifies their translation completion percentage.
-4. Synchronizes eligible translations back into the repository.
+1. Downloads completed translations.
+1. Verifies their translation completion percentage.
+1. Synchronizes eligible translations back into the repository.
 
 Depending on the repository configuration, translations may only be synchronized after reaching a minimum completion percentage.
 
