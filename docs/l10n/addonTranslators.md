@@ -60,18 +60,14 @@ This method does not require any additional software installation.
 
 ### Poedit
 
-Many NVDA translators prefer to work locally using Poedit because of its accessibility and ease of use.
+Many NVDA translators prefer to work locally using [Poedit](https://poedit.com/) because of its accessibility and ease of use.
 
 Poedit supports both:
 
 * Portable Object (`.po`) files used for interface translations.
 * XLIFF (`.xliff`) files used for documentation translations.
 
-After completing translations locally, files can be uploaded back to Crowdin using `l10nUtil.exe`.
-
-Poedit is available at
-
-https://poedit.com/
+After completing translations locally, files can be uploaded back to Crowdin using [l10nUtil.exe](https://github.com/nvaccess/nvdaL10n/releases/latest).
 
 ## Translating Interface Strings
 
