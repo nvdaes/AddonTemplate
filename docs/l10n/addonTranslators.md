@@ -37,11 +37,11 @@ The mailing list is often the best place to ask questions, request access to a t
 To contribute translations:
 
 1. Create a Crowdin account.
-2. Subscribe to the NVDA Translations mailing list.
-3. Request access to the appropriate translation team if necessary.
-4. Join the NVDA Add-ons Crowdin project.
-5. Select the language you wish to translate.
-6. Begin translating interface strings and documentation.
+1. Subscribe to the NVDA Translations mailing list.
+1. Request access to the appropriate translation team if necessary.
+1. Join the NVDA Add-ons Crowdin project.
+1. Select the language you wish to translate.
+1. Begin translating interface strings and documentation.
 
 ## Translation Methods
 
