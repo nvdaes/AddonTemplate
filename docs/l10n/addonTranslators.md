@@ -105,7 +105,7 @@ After translating files locally, they can be uploaded to Crowdin using `l10nUtil
 
 This utility can be found at
 
-https://github.com/nvaccess/nvdal10n
+https://github.com/nvaccess/nvdaL10n
 
 Examples:
 

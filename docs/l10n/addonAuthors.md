@@ -1,4 +1,4 @@
-# Translation guide for add-on authors
+# Translation Guide for Authors
 
 ## Overview
 
