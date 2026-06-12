@@ -58,4 +58,3 @@ If you manage several add-ons, consider using different cron schedules for each 
 Documentation and interface translations are synchronized only when their translation percentage reaches the configured `MIN_PERCENTAGE_TRANSLATED` threshold.
 
 This validation mechanism is applied consistently to both `.po` and `.xliff` translation files.
-
