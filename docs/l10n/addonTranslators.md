@@ -105,11 +105,11 @@ https://github.com/nvaccess/nvdaL10n
 
 Examples:
 
-```bash
+```cmd
 l10nUtil.exe uploadTranslationFile fr addonName.po -c addon
 ```
 
-```bash
+```cmd
 l10nUtil.exe uploadTranslationFile fr addonName.xliff -c addon
 ```
 
