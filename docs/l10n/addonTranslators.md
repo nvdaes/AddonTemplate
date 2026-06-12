@@ -97,11 +97,7 @@ When translating documentation:
 
 ## Uploading Offline Translations
 
-After translating files locally, they can be uploaded to Crowdin using `l10nUtil.exe`.
-
-This utility can be found at
-
-https://github.com/nvaccess/nvdaL10n
+After translating files locally, they can be uploaded to Crowdin using [l10nUtil.exe](https://github.com/nvaccess/nvdaL10n/releases/latest)
 
 Examples:
 
