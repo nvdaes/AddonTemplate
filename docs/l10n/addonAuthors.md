@@ -53,7 +53,8 @@ Translated XLIFF files downloaded from Crowdin are then converted back to Markdo
 The translation workflow will be run weekly.
 Also, you can run the workflow manually from GitHub or using GitHub CLI.
 
-If you manage several add-ons, consider using different cron schedules for each repository. Although the workflow includes a random startup delay to reduce collisions, concurrent Crowdin synchronization jobs may still occur.
+If you manage several add-ons, consider using different cron schedules for each repository.
+Although the workflow includes a random startup delay to reduce collisions, concurrent Crowdin synchronization jobs may still occur.
 
 Documentation and interface translations are synchronized only when their translation percentage reaches the configured `MIN_PERCENTAGE_TRANSLATED` threshold.
 
