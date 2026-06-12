@@ -121,25 +121,25 @@ Once uploaded, the translations become available in Crowdin and can later be syn
 
 To display the complete list of available commands:
 
-```bash
+```cmd
 l10nUtil.exe --help
 ```
 
 or:
 
-```bash
+```cmd
 l10nUtil.exe -h
 ```
 
 To display help for a specific command:
 
-```bash
+```cmd
 l10nUtil.exe downloadTranslationFile --help
 ```
 
 or:
 
-```bash
+```cmd
 l10nUtil.exe downloadTranslationFile -h
 ```
 
