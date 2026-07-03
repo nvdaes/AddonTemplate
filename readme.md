@@ -102,6 +102,29 @@ uv.lock
 7. If you create releases with the GitHub workflow, pushing a tag, update the `changelog.md` file with the release description you want to be displayed in on your GitHub release page.
 8. In the `[project]` section of `pyproject.toml`, update your project information.
 
+Alternatively:
+
+1. Create a repository on GitHub, where your add-on will be hosted. Provide readme.md and license files.
+2. Add the add-on template as a remote in your repository:
+
+```sh
+cd {repositoryFolder}
+git remote add template https://github.com/nvaccess/addonTemplate
+```
+
+3. Fetch the addonTemplate repository:
+
+```sh
+fetch template
+```
+
+4. Merge the template, passing the --unrelated-histories flag, since your add-on repository and the repository of the template won't share a common history. Also, pass the --squash flag to avoid having a bunch of commits in the history of your repository:
+
+```sh
+merge template --allow-unrelated-histories --squash
+
+For more details about updating your add-on repository with files updated in the add-on template, see [updating your add-on from the addon template](docs/managementFromGit/updatingExistingAddons.md).
+
 #### Add-on manifest specification
 
 An add-on manifest generated manually or via `buildVars.py` must include the following information:
