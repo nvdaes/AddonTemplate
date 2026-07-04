@@ -244,4 +244,3 @@ If you committed changes, you can use:
 ```sh
 git reset --hard {cleanBranch}
 ```
-
