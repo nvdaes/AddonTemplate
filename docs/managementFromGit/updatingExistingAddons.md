@@ -1,8 +1,46 @@
-# Updating an Existing Add-on
+# Integrating the add-on template in your add-on
+
+## Pre-requisites
+
+1. Create a repository, for example on GitHub, providing readme and license files.
+1. Clone the repository:
+
+  ```sh
+  git clone https://github.com/{repoName}.git
+  ```
+
+1. In the folder where your add-on repository is cloned, create an `addon` submolder and store the code for your add-on.
+
+1. Go to the folder where your repository was cloned:
+
+  ```sh
+  cd {repoFolder}
+  ```
+
+1. Commit your changes:
+
+  ```sh
+  git add .
+  git commit -m "Initial commit"
+  ```
+
+1. Add the template as a remote:
+
+  ```sh
+  git remote add template https://github.com/nvaccess/addonTemplate.git
+  ```
+
+1. Fetch the add-on template:
+
+  ```sh
+  git fetch template
+  ```
+
+## Updating an Existing Add-on
 
 As AddonTemplate evolves, it receives improvements, bug fixes, new GitHub workflows, and build system updates.
 
-If your add-on was created from an older version of AddonTemplate, you can merge the latest template changes into your repository instead of manually copying updated files.
+You can merge the latest template changes into your repository instead of manually copying updated files.
 
 This document explains the recommended update procedure.
 
@@ -15,7 +53,7 @@ Before updating your repository:
 
 - Ensure your working tree is clean.
 
-  ```
+  ```sh
   git status
   ```
 
@@ -23,9 +61,9 @@ Before updating your repository:
 
 - It is recommended to perform the update on a dedicated branch.
 
-If anything goes wrong before the merge commit is created, you can safely cancel the operation using:
+If anything goes wrong before the merge commit is created, if you haven't passed the `--squash- flag, you can safely cancel the operation using:
 
-```
+```sh
 git merge --abort
 ```
 
@@ -33,13 +71,13 @@ git merge --abort
 
 If you have not already done so, add AddonTemplate as a remote:
 
-```
+```sh
 git remote add template https://github.com/nvaccess/AddonTemplate.git
 ```
 
 Then fetch the latest changes:
 
-```
+```sh
 git fetch template
 ```
 
@@ -47,11 +85,13 @@ git fetch template
 
 Merge the latest version of AddonTemplate:
 
-```
-git merge template/master --allow-unrelated-histories
+```sh
+git merge template/master --allow-unrelated-histories --squash
 ```
 
 The `--allow-unrelated-histories` option is required because your add-on repository and AddonTemplate do not share a common Git history.
+
+The ---squash` flags will add changes from the template as a unique commit, instead of several ones, what may be useful to keep a cleaner history on your repository.
 
 At this stage, Git may report merge conflicts.
 
@@ -68,14 +108,19 @@ It simply means that some files require manual review.
 
 ## Resolving the merge
 
+### Using the restore command
+
+The `restore` command can be used to update files on your working directory, i.e., the folder where your add-on repository was cloned.
+The `--source` flag is used to determine where files to be restored can be found.
+
 ### Keep your add-on documentation
 
 Your add-on documentation should not be replaced by the template.
 
-Restore the following files from your current branch:
+To keep your `.md` files from your add-on repository, ensuring they aren't replaced with files from the template, you can use the following command:
 
-```
-git restore --source=HEAD README.md CHANGELOG.md
+```sh
+git restore *.md --source=HEAD
 ```
 
 ### Remove the template documentation
@@ -88,6 +133,12 @@ Remove it:
 
 ```
 git rm -r docs
+```
+
+Or use the restore command:
+
+```sh
+git restore docs --source=HEAD
 ```
 
 ### Resolve buildVars.py
@@ -164,8 +215,25 @@ Review the conflicting sections carefully and combine the changes from both vers
 
 ### I want to cancel the update
 
-If you have not yet committed the merge, you can restore your repository to its previous state:
+If you have not yet committed the merge, and you haven't passed the --squash flag to `git merge`, you can restore your repository to its previous state:
 
-```
+```sh
 git merge --abort
 ```
+
+If you passed the `--squash` flag, `git merge --abort` won't work. In this case, you can use the restore command:
+
+```sh
+git restore  . --staged  # Discard changes added to the staging area (after using `git add .`)
+```
+
+```sh
+git restore . --source=HEAD  # Restores the working directory to the last commit made in your add-on repository
+```
+
+If you committed changes, you can use:
+
+```sh
+git reset --hard {cleanBranch}
+```
+
