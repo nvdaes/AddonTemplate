@@ -180,15 +180,23 @@ Review any conflicts if necessary before completing the merge.
 
 ## Completing the merge
 
-Once all conflicts have been resolved, stage the modified files:
+Once all conflicts have been resolved, check if the add-on can be built properly:
 
+```sh
+uv sync  # Update dependencies
+uv run scons  # Build the add-on
 ```
+
+
+If all is right, stage the modified files:
+
+```sh
 git add .
 ```
 
 Then create the merge commit:
 
-```
+```sh
 git commit
 ```
 
