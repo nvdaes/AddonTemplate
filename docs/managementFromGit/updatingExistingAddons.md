@@ -91,7 +91,7 @@ git merge template/master --allow-unrelated-histories --squash
 
 The `--allow-unrelated-histories` option is required because your add-on repository and AddonTemplate do not share a common Git history.
 
-The ---squash` flags will add changes from the template as a unique commit, instead of several ones, what may be useful to keep a cleaner history on your repository.
+The `--squash` flags will add changes from the template as a unique commit, instead of several ones, what may be useful to keep a cleaner history on your repository.
 
 At this stage, Git may report merge conflicts.
 
@@ -223,13 +223,14 @@ Review the conflicting sections carefully and combine the changes from both vers
 
 ### I want to cancel the update
 
-If you have not yet committed the merge, and you haven't passed the --squash flag to `git merge`, you can restore your repository to its previous state:
+If you have not yet committed the merge, and you haven't passed the `--squash` flag to `git merge`, you can restore your repository to its previous state:
 
 ```sh
 git merge --abort
 ```
 
-If you passed the `--squash` flag, `git merge --abort` won't work. In this case, you can use the restore command:
+If you passed the `--squash` flag, `git merge --abort` won't work.
+In this case, you can use the restore command:
 
 ```sh
 git restore  . --staged  # Discard changes added to the staging area (after using `git add .`)
